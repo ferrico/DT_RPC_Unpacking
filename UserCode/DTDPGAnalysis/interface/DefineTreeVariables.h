@@ -204,3 +204,15 @@ std::vector<int>   rpc_layer;
 std::vector<int>   rpc_subsector;
 std::vector<int>   rpc_roll;
 std::vector<int>   rpc_ring;
+
+   int Bmtf_Size;
+   std::vector<int> Bmtf_Pt;
+   std::vector<int> Bmtf_Eta;
+   std::vector<int> Bmtf_Phi;
+   std::vector<int> Bmtf_qual;
+   std::vector<int> Bmtf_ch;
+   std::vector<int> Bmtf_bx;
+   std::vector<int> Bmtf_processor;
+   std::vector<int> Bmtf_trAddress;
+   std::vector<int> Bmtf_wh;
+   std::vector<int> Bmtf_FineBit;

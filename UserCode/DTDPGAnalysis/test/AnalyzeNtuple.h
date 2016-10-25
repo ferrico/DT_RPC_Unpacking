@@ -145,7 +145,19 @@ public :
    Short_t         Nmuons;
    Short_t         Ngmt;
    Short_t         Ngmtcands;
-
+   
+   int bmtfSize;
+   std::vector<int> bmtfPt;
+   std::vector<int> bmtfEta;
+   std::vector<int> bmtfPhi;
+   std::vector<int> bmtfqual;
+   std::vector<int> bmtfch;
+   std::vector<int> bmtfbx;
+   std::vector<int> bmtfprocessor;
+   std::vector<int> bmtftrAddress;
+   std::vector<int> bmtfwh;
+   std::vector<int> bmtfFineBit;
+   
    // List of branches
    TBranch        *b_runnumber;   //!
    TBranch        *b_lumiblock;   //!
@@ -273,6 +285,17 @@ public :
    TBranch        *b_Nmuons;   //!
    TBranch        *b_Ngmt;   //!
    TBranch        *b_Ngmtcands;   //!
+   TBranch        *b_bmtfSize;
+   TBranch        *b_bmtfPt;
+   TBranch        *b_bmtfEta;
+   TBranch        *b_bmtfPhi;
+   TBranch        *b_bmtfqual;
+   TBranch        *b_bmtfch;
+   TBranch        *b_bmtfbx;
+   TBranch        *b_bmtfprocessor;
+   TBranch        *b_bmtftrAddress;
+   TBranch        *b_bmtfwh;
+   TBranch        *b_bmtfFineBit;
 
    AnalyzeNtuple(TTree *tree=0);
    virtual ~AnalyzeNtuple();
@@ -442,6 +465,18 @@ void AnalyzeNtuple::Init(TTree *tree)
    gmt_cands_pt = 0;
    gmt_cands_qual = 0;
    gmt_cands_ismatched = 0;
+    bmtfSize = 0;
+    bmtfPt = 0;
+    bmtfEta = 0;
+    bmtfPhi = 0;
+    bmtfqual = 0;
+    bmtfch = 0;
+    bmtfbx = 0;
+    bmtfprocessor = 0;
+    bmtftrAddress = 0;
+    bmtfwh = 0;
+    bmtfFineBit = 0;
+   
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -574,6 +609,17 @@ void AnalyzeNtuple::Init(TTree *tree)
    fChain->SetBranchAddress("Nmuons", &Nmuons, &b_Nmuons);
    fChain->SetBranchAddress("Ngmt", &Ngmt, &b_Ngmt);
    fChain->SetBranchAddress("Ngmtcands", &Ngmtcands, &b_Ngmtcands);
+   fChain->SetBranchAddress("bmtfSize", &bmtfSize, &b_bmtfSize);
+   fChain->SetBranchAddress("bmtfPt", &bmtfPt, &b_bmtfPt);
+   fChain->SetBranchAddress("bmtfEta", &bmtfEta, &b_bmtfEta);
+   fChain->SetBranchAddress("bmtfPhi", &bmtfPhi, &b_bmtfPhi);
+   fChain->SetBranchAddress("bmtfqual", &bmtfqual, &b_bmtfqual);
+   fChain->SetBranchAddress("bmtfch", &bmtfch, &b_bmtfch);
+   fChain->SetBranchAddress("bmtfbx", &bmtfbx, &b_bmtfbx);
+   fChain->SetBranchAddress("bmtfprocessor", &bmtfprocessor, &b_bmtfprocessor);
+   fChain->SetBranchAddress("bmtftrAddress", &bmtftrAddress, &b_bmtftrAddress);
+   fChain->SetBranchAddress("bmtfwh", &bmtfwh, &b_bmtfwh);
+   fChain->SetBranchAddress("bmtfFineBit", &bmtfFineBit, &b_bmtfFineBit);
    Notify();
 }
 

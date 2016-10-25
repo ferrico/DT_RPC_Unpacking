@@ -83,13 +83,14 @@
 #include <iostream>
 #include <vector>
 
+
 TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset)
 {
   // get the tTrigDBInfo
   theSync =
       DTTTrigSyncFactory::get()->create(pset.getUntrackedParameter<std::string>("tTrigMode"),
                                 pset.getUntrackedParameter<edm::ParameterSet>("tTrigModeConfig"));
-
+  
   //get parameters from the configuration file
   //names of the different event collections
   dtDigiLabel_     = pset.getParameter<edm::InputTag>("dtDigiLabel");
@@ -153,6 +154,13 @@ TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset)
   localDTmuons_    = pset.getUntrackedParameter<bool>("localDTmuons","False");
 
   AnaTrackGlobalMu_= pset.getUntrackedParameter<bool>("AnaTrackGlobalMu","True");  // set to False when problems with tracks of global muons
+
+   bmtfPhInputTag_ = consumes<L1MuDTChambPhContainer>(pset.getParameter<edm::InputTag>("bmtfInputPhDigis"));
+   bmtfThInputTag_ = consumes<L1MuDTChambThContainer>(pset.getParameter<edm::InputTag>("bmtfInputThDigis"));
+   //bmtfOutputTag_ = consumes<l1t::RegionalMuonCandBxCollection>(pset.getParameter<edm::InputTag>("bmtfOutputDigis"));
+  bmtfInputTag_ = pset.getParameter<edm::InputTag>("bmtfOutputDigis");
+  bmtfOutputTag_ = consumes<l1t::RegionalMuonCandBxCollection>(edm::InputTag(bmtfInputTag_));
+
 
   outFile_         = pset.getParameter<std::string>("outputFile");
 
@@ -313,6 +321,9 @@ void TTreeGenerator::analyze(const edm::Event& event, const edm::EventSetup& con
       PV_normchi2 = -999.;
       PV_Nvtx = -999;
     }
+    
+    //Bmtf_Pt.push_back(-1);
+    
   }
 
   //DIGIS
@@ -344,10 +355,79 @@ void TTreeGenerator::analyze(const edm::Event& event, const edm::EventSetup& con
   // RPC
   if(!localDTmuons_) fill_rpc_variables(event,rpcHits);
   
+  analyzeBMTF(event);
+  
   tree_->Fill();
 
   return;
 }
+
+
+void TTreeGenerator::analyzeBMTF(const edm::Event& event)
+{
+  //l1bmtf->Reset();
+
+// edm::InputTag dttfSource_("BMTFStage2Digis");
+//unsigned int max = 50;
+  edm::Handle<L1MuDTChambPhContainer > myL1MuDTChambPhContainer;
+  //iEvent.getByLabel("BMTFStage2Digis",myL1MuDTChambPhContainer);
+  event.getByToken(bmtfPhInputTag_,myL1MuDTChambPhContainer);
+//   if (!myL1MuDTChambPhContainer.isValid()) {
+//     edm::LogInfo("L1Prompt") << "can't find L1MuDTChambPhContainer" ;
+//     }
+//   else l1bmtf->SetDTPH(myL1MuDTChambPhContainer, max);
+
+  edm::Handle<L1MuDTChambThContainer > myL1MuDTChambThContainer;
+  //iEvent.getByLabel("BMTFStage2Digis",myL1MuDTChambThContainer);
+  event.getByToken(bmtfThInputTag_,myL1MuDTChambThContainer);
+//   if (!myL1MuDTChambThContainer.isValid()) {
+//     edm::LogInfo("L1Prompt") << "can't find L1MuDTChambThContainer";
+//     }
+//   else l1bmtf->SetDTTH(myL1MuDTChambThContainer, max);
+
+///Output of BMTF
+  int ctr = 0;
+  edm::Handle<l1t::RegionalMuonCandBxCollection> mycoll;
+  event.getByToken(bmtfOutputTag_,mycoll);
+  //const l1t::RegionalMuonCandBxCollection& coll = *mycoll;
+  if (mycoll.isValid()) {
+        int firstbx = (*mycoll).getFirstBX();
+        int lastbx  = (*mycoll).getLastBX() + 1;
+        //cout<<firstbx<<"\t"<<lastbx<<"\t"<<(*mycoll).size()<<std::endl;
+        for(int i=firstbx; i<lastbx; i++){
+            //l1bmtf->SetBMTF(*mycoll, ctr, i);
+  				for (auto mu = (*mycoll).begin(i); mu != (*mycoll).end(i); ++mu) {
+	    		  //cout<<ctr<<endl;
+		    	  ctr++;
+			      Bmtf_Pt.push_back(mu->hwPt());
+			      Bmtf_Eta.push_back(mu->hwEta());
+			      Bmtf_FineBit.push_back(mu->hwHF());
+			      Bmtf_Phi.push_back(mu->hwPhi());
+		    	  Bmtf_qual.push_back(mu->hwQual());
+	    		  Bmtf_ch.push_back(mu->hwSign());
+    			  Bmtf_bx.push_back(i);
+			      Bmtf_processor.push_back(mu->processor());
+    			 // Bmtf__.Bmtf_trAddress.push_back(mu->hwTrackAddress());
+			      std::map<int, int>  trAdd;
+	    		  trAdd = mu->trackAddress();
+		    	  int wheel = pow(-1,trAdd[0]) * trAdd[1];
+    			  Bmtf_wh.push_back(wheel);
+			      Bmtf_trAddress.push_back(trAdd[2]);
+    			  Bmtf_trAddress.push_back(trAdd[3]);
+	    		  Bmtf_trAddress.push_back(trAdd[4]);
+			      Bmtf_trAddress.push_back(trAdd[5]);
+
+    			} // for mu
+    			
+		        Bmtf_Size = ctr;
+ 	 } // for i
+  } //if
+  else 
+      edm::LogInfo("L1Prompt") << "can't find L1MuMBTrackContainer";
+  
+
+}
+
 
 void TTreeGenerator::fill_digi_variables(edm::Handle<DTDigiCollection> dtdigis)
 {
@@ -1111,6 +1191,19 @@ void TTreeGenerator::beginJob()
   tree_->Branch("Ngttechtrig",&igttt,"Ngttt/S");
   tree_->Branch("Nhlt",&ihlt,"Nhlt/S");
   tree_->Branch("NrpcRecHits",&irpcrechits,"NrpcRecHits/S");
+  
+  tree_->Branch("bmtfPt", &Bmtf_Pt); 
+  tree_->Branch("bmtfPt", &Bmtf_Pt);
+  tree_->Branch("bmtfEta", &Bmtf_Eta);
+  tree_->Branch("bmftFineBit", &Bmtf_FineBit);
+  tree_->Branch("bmtfPhi", &Bmtf_Phi);
+  tree_->Branch("bmtfqual", &Bmtf_qual);
+  tree_->Branch("bmtfch", &Bmtf_ch);
+  tree_->Branch("bmtfbx", &Bmtf_bx);
+  tree_->Branch("bmtfprocessor", &Bmtf_processor);
+  tree_->Branch("bmtfwh", &Bmtf_wh);
+  tree_->Branch("bmtftrAddress", &Bmtf_trAddress);
+  tree_->Branch("bmtfSize", &Bmtf_Size);
 
   return;
 }
@@ -1296,6 +1389,18 @@ inline void TTreeGenerator::clear_Arrays()
   rpc_subsector.clear();
   rpc_roll.clear();
   rpc_ring.clear();
+  
+	 //Bmtf_Size.clear();
+	  Bmtf_Pt.clear();
+	  Bmtf_Eta.clear();
+	  Bmtf_Phi.clear();
+	  Bmtf_qual.clear();
+	  Bmtf_ch.clear();
+	  Bmtf_bx.clear();
+	  Bmtf_processor.clear();
+	  Bmtf_trAddress.clear();
+	  Bmtf_wh.clear();
+	  Bmtf_FineBit.clear();
   
   return;
 }

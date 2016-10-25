@@ -15,6 +15,13 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 
 #include "TrackingTools/GeomPropagators/interface/Propagator.h"
+#include <FWCore/Framework/interface/ConsumesCollector.h>
+#include "DataFormats/L1TMuon/interface/RegionalMuonCandFwd.h"
+#include "DataFormats/L1TMuon/interface/RegionalMuonCand.h"
+
+//using namespace l1t;
+
+//#include "UserCode/DTDPGAnalysis/interface/L1AnalysisBMTFDataFormat.h"
 
 class DTTTrigBaseSync;
 
@@ -52,14 +59,21 @@ private:
   void fill_gmt_variables(edm::Handle<L1MuGMTReadoutCollection> gmtrc);
   void fill_gt_variables(edm::Handle<L1GlobalTriggerReadoutRecord> gtrr, const L1GtTriggerMenu* menu);
   void fill_hlt_variables(const edm::Event& e, edm::Handle<edm::TriggerResults> hltresults);
-  void fill_rpc_variables(const edm::Event &e, edm::Handle<RPCRecHitCollection> rpcrechits);
+  void fill_rpc_variables(const edm::Event& e, edm::Handle<RPCRecHitCollection> rpcrechits);
   void fill_dtphi_info(const DTChamberRecSegment2D* phiSeg,const GeomDet* geomDet);
   void fill_dtz_info(const DTSLRecSegment2D* zSeg, const GeomDet* geomDet);
+  void analyzeBMTF(const edm::Event& e);
 
   std::vector<L1MuRegionalCand> getBXCands(const L1MuGMTReadoutRecord* igmtrr, const int DetectorType) const;
 
   TrajectoryStateOnSurface cylExtrapTrkSam(reco::TrackRef track, const float rho) const;
   FreeTrajectoryState freeTrajStateMuon(const reco::TrackRef track) const;
+
+  edm::InputTag bmtfInputTag_;
+  edm::EDGetTokenT<L1MuDTChambPhContainer> bmtfPhInputTag_;
+  edm::EDGetTokenT<L1MuDTChambThContainer> bmtfThInputTag_;
+  edm::EDGetTokenT<l1t::RegionalMuonCandBxCollection> bmtfOutputTag_;
+
 
   edm::InputTag dtDigiLabel_;
   edm::EDGetTokenT<DTDigiCollection> dtDigiToken_ ;

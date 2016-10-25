@@ -29,7 +29,9 @@ myDTNtuple = cms.EDAnalyzer('TTreeGenerator',
                             runOnRaw = cms.bool(True),
                             runOnSimulation = cms.bool(False),
                             localDTmuons    = cms.bool(False),
-
+   							bmtfInputPhDigis = cms.InputTag("BMTFStage2Digis"),
+						    bmtfInputThDigis = cms.InputTag("BMTFStage2Digis"),
+						    bmtfOutputDigis = cms.InputTag("BMTFStage2Digis"),
            ######## Parameters for retrieving the ttrig to correct the recHit times
                             tTrigModeConfig = cms.untracked.PSet(
                                   vPropWire = cms.double(24.4),
