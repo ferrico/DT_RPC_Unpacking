@@ -104,7 +104,10 @@ process.source = cms.Source("PoolSource",
     ##'/store/express/Commissioning2016/ExpressPhysics/FEVT/Express-v1/000/270/389/00000/A0D5994E-9506-E611-A4A7-02163E0141CE.root'
     # '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/12D4E6E2-F891-E611-8EC1-02163E012A22.root'
 	#'root://xrootd-cms.infn.it///store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/06BA6E22-EE91-E611-87B6-02163E012AE5.root'
-  'file:./06BA6E22-EE91-E611-87B6-02163E012AE5.root',
+#  'file:../../..//06BA6E22-EE91-E611-87B6-02163E012AE5.root',
+#       '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/12D4E6E2-F891-E611-8EC1-02163E012A22.root',
+       '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/1A2F648B-E891-E611-8262-02163E011995.root',
+#       '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/3AA76B2A-F091-E611-B97F-FA163EFD691C.root',
   ),
   secondaryFileNames = cms.untracked.vstring(
   )
@@ -132,8 +135,8 @@ process.DTMuonSelection = cms.EDFilter("DTMuonSelection",
                                  dtSegmentLabel = cms.InputTag('dt4DSegments'),
                                  etaMin = cms.double(-1.25),
                                  etaMax = cms.double(1.25),
-                                 ptMin = cms.double(3.),
-                                 tightness = cms.int32(0) # 0 = loose (e.g. unstable collisions, minimum bias, requires a DT segment)
+                                 ptMin = cms.double(0.),#3.),
+                                 tightness = cms.int32(1) # 0 = loose (e.g. unstable collisions, minimum bias, requires a DT segment)
                                                           # 1 = medium (e.g. cosmics, requires a stand alone muon)
                                                           # 2 = tight (good collisions, requires a global muon)
 )
@@ -152,11 +155,22 @@ process.myDTNtuple.bmtfOutputDigis = cms.InputTag("BMTFStage2Digis:BMTF")
 # process.myDTNtuple.bmtfInputThDigis = cms.InputTag("BMTFStage2Digis:TheDigis")
 ##process.myDTNtuple.staMuLabel = cms.InputTag("standAloneMuons")
 
+## RPC unpacking
+process.load("EventFilter.RPCRawToDigi.rpcUnpackingModule_cfi")
+
 ## pp collisions before 2016 (DTTF - DCC)
 ###process.p = cms.Path(process.DTMuonSelection *  process.dtunpacker * process.dttfunpacker * process.scalersRawToDigi * process.muonDTDigis * process.dtTriggerPrimitiveDigis + process.myDTNtuple)
 
 ## pp collisions from 2016 (TM)
-process.p = cms.Path( process.DTMuonSelection * process.dtunpacker * process.twinMuxStage2Digis  * process.scalersRawToDigi * process.lumiProducer * process.muonDTDigis * process.dtTriggerPrimitiveDigis + process.BMTFStage2Digis + process.myDTNtuple)
+process.p = cms.Path(process.DTMuonSelection * process.dtunpacker * process.twinMuxStage2Digis  * process.scalersRawToDigi * process.lumiProducer * process.muonDTDigis * process.dtTriggerPrimitiveDigis + process.BMTFStage2Digis + process.rpcUnpackingModule + process.myDTNtuple)
+
+# Output
+process.out = cms.OutputModule("PoolOutputModule"
+                               , outputCommands = cms.untracked.vstring("drop *"
+                                                                        , "keep *_*_*_testRPCTwinMuxRawToDigi")
+#                                , fileName = cms.untracked.string(options.outputFile)
+                               , SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring("p"))
+)
 
 ### Cosmics before 2016 (DTTF - DCC) 
 ###process.p = cms.Path(process.dtunpacker * process.dttfunpacker + process.myDTNtuple)

@@ -158,6 +158,19 @@ public :
    std::vector<int> bmtfwh;
    std::vector<int> bmtfFineBit;
    
+   std::vector<int> twinMuxRpcBx;
+   std::vector<int> twinMuxRpcStrip;
+   std::vector<int> twinMuxRpcRegion;
+   std::vector<int> twinMuxRpcRing;
+   std::vector<int> twinMuxRpcStation;
+   std::vector<int> twinMuxRpcLayer;
+   std::vector<int> twinMuxRpcSubsector;
+   std::vector<int> twinMuxRpcRoll;
+   std::vector<int> twinMuxRpcTrIndex;
+   std::vector<int> twinMuxRpcDet;
+   std::vector<int> twinMuxRpcSubdetId;
+   std::vector<int> twinMuxRpcRawId;
+   
    // List of branches
    TBranch        *b_runnumber;   //!
    TBranch        *b_lumiblock;   //!
@@ -285,17 +298,29 @@ public :
    TBranch        *b_Nmuons;   //!
    TBranch        *b_Ngmt;   //!
    TBranch        *b_Ngmtcands;   //!
-   TBranch        *b_bmtfSize;
-   TBranch        *b_bmtfPt;
-   TBranch        *b_bmtfEta;
-   TBranch        *b_bmtfPhi;
-   TBranch        *b_bmtfqual;
-   TBranch        *b_bmtfch;
-   TBranch        *b_bmtfbx;
-   TBranch        *b_bmtfprocessor;
-   TBranch        *b_bmtftrAddress;
-   TBranch        *b_bmtfwh;
-   TBranch        *b_bmtfFineBit;
+   TBranch        *b_bmtfSize;   //!
+   TBranch        *b_bmtfPt;   //!
+   TBranch        *b_bmtfEta;   //!
+   TBranch        *b_bmtfPhi;   //!
+   TBranch        *b_bmtfqual;   //!
+   TBranch        *b_bmtfch;   //!
+   TBranch        *b_bmtfbx;   //!
+   TBranch        *b_bmtfprocessor;   //!
+   TBranch        *b_bmtftrAddress;   //!
+   TBranch        *b_bmtfwh;   //!
+   TBranch        *b_bmtfFineBit;   //!
+   TBranch        *b_twinMuxRpcBx;   //!
+   TBranch        *b_twinMuxRpcStrip;   //!
+   TBranch        *b_twinMuxRpcRegion;   //!
+   TBranch        *b_twinMuxRpcRing;   //!
+   TBranch        *b_twinMuxRpcStation;   //!
+   TBranch        *b_twinMuxRpcLayer;   //!
+   TBranch        *b_twinMuxRpcSubsector;   //!
+   TBranch        *b_twinMuxRpcRoll;   //!
+   TBranch        *b_twinMuxRpcTrIndex;   //!
+   TBranch        *b_twinMuxRpcDet;   //!
+   TBranch        *b_twinMuxRpcSubdetId;   //!
+   TBranch        *b_twinMuxRpcRawId;   //!
 
    AnalyzeNtuple(TTree *tree=0);
    virtual ~AnalyzeNtuple();
@@ -476,6 +501,18 @@ void AnalyzeNtuple::Init(TTree *tree)
     bmtftrAddress = 0;
     bmtfwh = 0;
     bmtfFineBit = 0;
+    twinMuxRpcBx = 0;
+    twinMuxRpcStrip = 0;
+    twinMuxRpcRegion = 0;
+    twinMuxRpcRing = 0;
+    twinMuxRpcStation = 0;
+    twinMuxRpcLayer = 0;
+    twinMuxRpcSubsector = 0;
+    twinMuxRpcRoll = 0;
+    twinMuxRpcTrIndex = 0;
+    twinMuxRpcDet = 0;
+    twinMuxRpcSubdetId = 0;
+    twinMuxRpcRawId = 0;
    
    // Set branch addresses and branch pointers
    if (!tree) return;
@@ -620,6 +657,19 @@ void AnalyzeNtuple::Init(TTree *tree)
    fChain->SetBranchAddress("bmtftrAddress", &bmtftrAddress, &b_bmtftrAddress);
    fChain->SetBranchAddress("bmtfwh", &bmtfwh, &b_bmtfwh);
    fChain->SetBranchAddress("bmtfFineBit", &bmtfFineBit, &b_bmtfFineBit);
+   fChain->SetBranchAddress("twinMuxRpcBx", &TwinMux_Rpc_bx, &b_twinMuxRpcBx);
+   fChain->SetBranchAddress("twinMuxRpcStrip", &TwinMux_Rpc_strip, &b_twinMuxRpcStrip);
+   fChain->SetBranchAddress("twinMuxRpcRegion", &TwinMux_Rpc_region, &b_twinMuxRpcRegion);
+   fChain->SetBranchAddress("twinMuxRpcRing", &TwinMux_Rpc_ring, &b_twinMuxRpcRing);
+   fChain->SetBranchAddress("twinMuxRpcStation", &TwinMux_Rpc_station, &b_twinMuxRpcStation);
+   fChain->SetBranchAddress("twinMuxRpcLayer", &TwinMux_Rpc_layer, &b_twinMuxRpcLayer);
+   fChain->SetBranchAddress("twinMuxRpcSubsector", &TwinMux_Rpc_subsector, &b_twinMuxRpcSubsector);
+   fChain->SetBranchAddress("twinMuxRpcRoll", &TwinMux_Rpc_roll, &b_twinMuxRpcRoll);
+   fChain->SetBranchAddress("twinMuxRpcTrIndex", &TwinMux_Rpc_trIndex, &b_twinMuxRpcTrIndex);
+   fChain->SetBranchAddress("twinMuxRpcDet", &TwinMux_Rpc_det, &b_twinMuxRpcDet);
+   fChain->SetBranchAddress("twinMuxRpcSubdetId", &TwinMux_Rpc_subdetId, &b_twinMuxRpcSubdetId);
+   fChain->SetBranchAddress("twinMuxRpcRawId", &TwinMux_Rpc_rawId, &b_twinMuxRpcRawId);
+
    Notify();
 }
 

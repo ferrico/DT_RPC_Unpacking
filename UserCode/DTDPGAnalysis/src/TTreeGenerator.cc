@@ -75,6 +75,8 @@
 #include <DataFormats/RPCDigi/interface/RPCDigiCollection.h>
 #include <DataFormats/RPCRecHit/interface/RPCRecHitCollection.h>
 #include <DataFormats/MuonDetId/interface/RPCDetId.h>
+#include "DataFormats/RPCDigi/interface/RPCDigi.h"
+#include <DataFormats/MuonData/interface/MuonDigiCollection.h>
 
 #include "CalibMuon/DTDigiSync/interface/DTTTrigBaseSync.h"
 #include "CalibMuon/DTDigiSync/interface/DTTTrigSyncFactory.h"
@@ -84,7 +86,9 @@
 #include <vector>
 
 
-TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset)
+TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset):
+	rpcToken_(consumes<MuonDigiCollection<RPCDetId,RPCDigi> > (pset.getParameter<edm::InputTag>("rpcLabel")))
+
 {
   // get the tTrigDBInfo
   theSync =
@@ -357,12 +361,40 @@ void TTreeGenerator::analyze(const edm::Event& event, const edm::EventSetup& con
   
   analyzeBMTF(event);
   
+  analyzeRPCunpacking(event);
+  
   tree_->Fill();
 
   return;
 }
 
 
+void TTreeGenerator::analyzeRPCunpacking(const edm::Event& event)
+{
+	edm::Handle<MuonDigiCollection<RPCDetId,RPCDigi> > rpc;
+	event.getByToken(rpcToken_, rpc);
+	auto chamber = rpc->begin();
+	auto chend  = rpc->end();
+	for( ; chamber != chend; ++chamber ) {
+   		auto digi = (*chamber).second.first;
+	    auto dend = (*chamber).second.second;
+		for( ; digi != dend; ++digi ) {
+			TwinMux_Rpc_bx.push_back(digi->bx());
+			TwinMux_Rpc_strip.push_back(digi->strip());
+	}
+	TwinMux_Rpc_region.push_back((*chamber).first.region()); 
+	TwinMux_Rpc_ring.push_back((*chamber).first.ring());
+	TwinMux_Rpc_station.push_back((*chamber).first.station());
+	TwinMux_Rpc_layer.push_back((*chamber).first.layer());
+	TwinMux_Rpc_subsector.push_back((*chamber).first.subsector()); 
+	TwinMux_Rpc_roll.push_back((*chamber).first.roll());
+	TwinMux_Rpc_trIndex.push_back((*chamber).first.trIndex());
+	TwinMux_Rpc_det.push_back((*chamber).first.det());
+	TwinMux_Rpc_subdetId.push_back((*chamber).first.subdetId()); 
+	TwinMux_Rpc_rawId.push_back((*chamber).first.rawId()); 
+}  
+
+}
 void TTreeGenerator::analyzeBMTF(const edm::Event& event)
 {
   //l1bmtf->Reset();
@@ -425,7 +457,6 @@ void TTreeGenerator::analyzeBMTF(const edm::Event& event)
   else 
       edm::LogInfo("L1Prompt") << "can't find L1MuMBTrackContainer";
   
-
 }
 
 
@@ -1204,6 +1235,19 @@ void TTreeGenerator::beginJob()
   tree_->Branch("bmtfwh", &Bmtf_wh);
   tree_->Branch("bmtftrAddress", &Bmtf_trAddress);
   tree_->Branch("bmtfSize", &Bmtf_Size);
+  
+  tree_->Branch("twinMuxRpcBx", &TwinMux_Rpc_bx);
+  tree_->Branch("twinMuxRpcStrip", &TwinMux_Rpc_strip);
+  tree_->Branch("twinMuxRpcRegion", &TwinMux_Rpc_region);
+  tree_->Branch("twinMuxRpcRing", &TwinMux_Rpc_ring);
+  tree_->Branch("twinMuxRpcStation", &TwinMux_Rpc_station);
+  tree_->Branch("twinMuxRpcLayer", &TwinMux_Rpc_layer);
+  tree_->Branch("twinMuxRpcSubSector", &TwinMux_Rpc_subsector);
+  tree_->Branch("twinMuxRpcRoll", &TwinMux_Rpc_roll);
+  tree_->Branch("twinMuxRpcTrIndex", &TwinMux_Rpc_trIndex);
+  tree_->Branch("twinMuxRpcDet", &TwinMux_Rpc_det);
+  tree_->Branch("twinMuxRpcSubdetId", &TwinMux_Rpc_subdetId);
+  tree_->Branch("twinMuxRpcRawId", &TwinMux_Rpc_rawId);
 
   return;
 }
@@ -1401,6 +1445,19 @@ inline void TTreeGenerator::clear_Arrays()
 	  Bmtf_trAddress.clear();
 	  Bmtf_wh.clear();
 	  Bmtf_FineBit.clear();
+	  
+	TwinMux_Rpc_bx.clear();
+	TwinMux_Rpc_strip.clear();
+	TwinMux_Rpc_region.clear();
+	TwinMux_Rpc_ring.clear();
+	TwinMux_Rpc_station.clear();
+	TwinMux_Rpc_layer.clear();
+	TwinMux_Rpc_subsector.clear();
+	TwinMux_Rpc_roll.clear();
+	TwinMux_Rpc_trIndex.clear();
+	TwinMux_Rpc_det.clear();
+	TwinMux_Rpc_subdetId.clear();
+	TwinMux_Rpc_rawId.clear();
   
   return;
 }

@@ -216,3 +216,16 @@ std::vector<int>   rpc_ring;
    std::vector<int> Bmtf_trAddress;
    std::vector<int> Bmtf_wh;
    std::vector<int> Bmtf_FineBit;
+   
+   std::vector<int> TwinMux_Rpc_bx;
+   std::vector<int> TwinMux_Rpc_strip;
+   std::vector<int> TwinMux_Rpc_region;
+   std::vector<int> TwinMux_Rpc_ring;
+   std::vector<int> TwinMux_Rpc_station;
+   std::vector<int> TwinMux_Rpc_layer;
+   std::vector<int> TwinMux_Rpc_subsector;
+   std::vector<int> TwinMux_Rpc_roll;
+   std::vector<int> TwinMux_Rpc_trIndex;
+   std::vector<int> TwinMux_Rpc_det;
+   std::vector<int> TwinMux_Rpc_subdetId;
+   std::vector<int> TwinMux_Rpc_rawId;

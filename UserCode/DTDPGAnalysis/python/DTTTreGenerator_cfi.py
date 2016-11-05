@@ -32,6 +32,7 @@ myDTNtuple = cms.EDAnalyzer('TTreeGenerator',
    							bmtfInputPhDigis = cms.InputTag("BMTFStage2Digis"),
 						    bmtfInputThDigis = cms.InputTag("BMTFStage2Digis"),
 						    bmtfOutputDigis = cms.InputTag("BMTFStage2Digis"),
+				    		rpcLabel 		  = cms.InputTag("rpcUnpackingModule"),
            ######## Parameters for retrieving the ttrig to correct the recHit times
                             tTrigModeConfig = cms.untracked.PSet(
                                   vPropWire = cms.double(24.4),

@@ -63,6 +63,7 @@ private:
   void fill_dtphi_info(const DTChamberRecSegment2D* phiSeg,const GeomDet* geomDet);
   void fill_dtz_info(const DTSLRecSegment2D* zSeg, const GeomDet* geomDet);
   void analyzeBMTF(const edm::Event& e);
+  void analyzeRPCunpacking(const edm::Event& e);
 
   std::vector<L1MuRegionalCand> getBXCands(const L1MuGMTReadoutRecord* igmtrr, const int DetectorType) const;
 
@@ -74,6 +75,8 @@ private:
   edm::EDGetTokenT<L1MuDTChambThContainer> bmtfThInputTag_;
   edm::EDGetTokenT<l1t::RegionalMuonCandBxCollection> bmtfOutputTag_;
 
+  
+  edm::EDGetTokenT<MuonDigiCollection<RPCDetId,RPCDigi> > rpcToken_;
 
   edm::InputTag dtDigiLabel_;
   edm::EDGetTokenT<DTDigiCollection> dtDigiToken_ ;
