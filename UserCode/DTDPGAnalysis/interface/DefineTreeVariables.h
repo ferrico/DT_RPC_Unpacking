@@ -206,9 +206,9 @@ std::vector<int>   rpc_roll;
 std::vector<int>   rpc_ring;
 
    int Bmtf_Size;
-   std::vector<int> Bmtf_Pt;
-   std::vector<int> Bmtf_Eta;
-   std::vector<int> Bmtf_Phi;
+   std::vector<float> Bmtf_Pt;
+   std::vector<float> Bmtf_Eta;
+   std::vector<float> Bmtf_Phi;
    std::vector<int> Bmtf_qual;
    std::vector<int> Bmtf_ch;
    std::vector<int> Bmtf_bx;
@@ -229,3 +229,14 @@ std::vector<int>   rpc_ring;
    std::vector<int> TwinMux_Rpc_det;
    std::vector<int> TwinMux_Rpc_subdetId;
    std::vector<int> TwinMux_Rpc_rawId;
+   
+   std::vector<int>   Unpacking_Rpc_RecHit_region;
+	std::vector<int>   Unpacking_Rpc_RecHit_clusterSize;
+	std::vector<int>   Unpacking_Rpc_RecHit_strip;
+	std::vector<int>   Unpacking_Rpc_RecHit_bx;
+	std::vector<int>   Unpacking_Rpc_RecHit_station;
+	std::vector<int>   Unpacking_Rpc_RecHit_sector;
+	std::vector<int>   Unpacking_Rpc_RecHit_layer;
+	std::vector<int>   Unpacking_Rpc_RecHit_subsector;
+	std::vector<int>   Unpacking_Rpc_RecHit_roll;
+	std::vector<int>   Unpacking_Rpc_RecHit_ring;

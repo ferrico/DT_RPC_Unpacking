@@ -87,7 +87,8 @@
 
 
 TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset):
-	rpcToken_(consumes<MuonDigiCollection<RPCDetId,RPCDigi> > (pset.getParameter<edm::InputTag>("rpcLabel")))
+	rpcToken_(consumes<MuonDigiCollection<RPCDetId,RPCDigi> > (pset.getParameter<edm::InputTag>("rpcLabel"))),
+	UnpackingRpcRecHitToken_(consumes<RPCRecHitCollection> (pset.getParameter<edm::InputTag>("UnpackingRpcRecHitLabel")))
 
 {
   // get the tTrigDBInfo
@@ -128,7 +129,7 @@ TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset):
 
   rpcRecHitLabel_  = pset.getParameter<edm::InputTag>("rpcRecHitLabel");
   rpcRecHitToken_  = consumes<RPCRecHitCollection>(edm::InputTag(rpcRecHitLabel_));
-
+  
   //max size of the different saved objects (per event)
   digisSize_       = pset.getParameter<int>("dtDigiSize");
   dtsegmentsSize_  = pset.getParameter<int>("dtSegmentSize");
@@ -164,6 +165,10 @@ TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset):
    //bmtfOutputTag_ = consumes<l1t::RegionalMuonCandBxCollection>(pset.getParameter<edm::InputTag>("bmtfOutputDigis"));
   bmtfInputTag_ = pset.getParameter<edm::InputTag>("bmtfOutputDigis");
   bmtfOutputTag_ = consumes<l1t::RegionalMuonCandBxCollection>(edm::InputTag(bmtfInputTag_));
+  
+  // unpacking Rpc RecHit
+  // UnpackingRpcRecHitLabel_  = pset.getParameter<edm::InputTag>("UnpackingRpcRecHitLabel");
+//   UnpackingRpcRecHitToken_  = consumes<RPCRecHitCollection>(edm::InputTag(UnpackingRpcRecHitLabel_));
 
 
   outFile_         = pset.getParameter<std::string>("outputFile");
@@ -183,6 +188,7 @@ TTreeGenerator::TTreeGenerator(const edm::ParameterSet& pset):
   igtalgo      = 0; // legacy
   igttt        = 0; // legacy
   ihlt         = 0;
+
 }
 
 void TTreeGenerator::beginLuminosityBlock(edm::LuminosityBlock const& lumiBlock,
@@ -363,10 +369,36 @@ void TTreeGenerator::analyze(const edm::Event& event, const edm::EventSetup& con
   
   analyzeRPCunpacking(event);
   
+  analyzeUnpackingRpcRecHit(event);
+  
   tree_->Fill();
 
   return;
 }
+
+
+void TTreeGenerator::analyzeUnpackingRpcRecHit(const edm::Event& event){
+  edm::Handle<RPCRecHitCollection> UnpackingRpcHits;
+  event.getByToken(UnpackingRpcRecHitToken_, UnpackingRpcHits);
+  RPCRecHitCollection::const_iterator recHit;
+  irpcrechits=0;
+  for(recHit = UnpackingRpcHits->begin(); recHit != UnpackingRpcHits->end(); recHit++){ 
+    RPCDetId rpcId = recHit->rpcId();    
+    Unpacking_Rpc_RecHit_region.push_back(rpcId.region());
+    Unpacking_Rpc_RecHit_clusterSize.push_back(recHit->clusterSize());
+    Unpacking_Rpc_RecHit_strip.push_back(recHit->firstClusterStrip());
+    Unpacking_Rpc_RecHit_bx.push_back(recHit->BunchX());
+    Unpacking_Rpc_RecHit_station.push_back(rpcId.station());
+    Unpacking_Rpc_RecHit_sector.push_back(rpcId.sector());
+    Unpacking_Rpc_RecHit_layer.push_back(rpcId.layer());
+    Unpacking_Rpc_RecHit_subsector.push_back(rpcId.subsector());
+    Unpacking_Rpc_RecHit_roll.push_back(rpcId.roll());
+    Unpacking_Rpc_RecHit_ring.push_back(rpcId.ring());
+    irpcrechits++;
+  }
+  return;
+}
+
 
 
 void TTreeGenerator::analyzeRPCunpacking(const edm::Event& event)
@@ -395,6 +427,7 @@ void TTreeGenerator::analyzeRPCunpacking(const edm::Event& event)
 }  
 
 }
+
 void TTreeGenerator::analyzeBMTF(const edm::Event& event)
 {
   //l1bmtf->Reset();
@@ -431,8 +464,8 @@ void TTreeGenerator::analyzeBMTF(const edm::Event& event)
   				for (auto mu = (*mycoll).begin(i); mu != (*mycoll).end(i); ++mu) {
 	    		  //cout<<ctr<<endl;
 		    	  ctr++;
-			      Bmtf_Pt.push_back(mu->hwPt());
-			      Bmtf_Eta.push_back(mu->hwEta());
+			      Bmtf_Pt.push_back(mu->hwPt()*0.5);
+			      Bmtf_Eta.push_back(mu->hwEta()*0.010875);
 			      Bmtf_FineBit.push_back(mu->hwHF());
 			      Bmtf_Phi.push_back(mu->hwPhi());
 		    	  Bmtf_qual.push_back(mu->hwQual());
@@ -458,7 +491,6 @@ void TTreeGenerator::analyzeBMTF(const edm::Event& event)
       edm::LogInfo("L1Prompt") << "can't find L1MuMBTrackContainer";
   
 }
-
 
 void TTreeGenerator::fill_digi_variables(edm::Handle<DTDigiCollection> dtdigis)
 {
@@ -1008,7 +1040,6 @@ std::vector<L1MuRegionalCand> TTreeGenerator::getBXCands(const L1MuGMTReadoutRec
   return igmtrr->getDTBXCands();
 }
 
-
 void TTreeGenerator::beginJob()
 {
   outFile = new TFile(outFile_.c_str(), "RECREATE", "");
@@ -1222,12 +1253,12 @@ void TTreeGenerator::beginJob()
   tree_->Branch("Ngttechtrig",&igttt,"Ngttt/S");
   tree_->Branch("Nhlt",&ihlt,"Nhlt/S");
   tree_->Branch("NrpcRecHits",&irpcrechits,"NrpcRecHits/S");
-  
-  tree_->Branch("bmtfPt", &Bmtf_Pt); 
+ 
+  // Bmtf  
   tree_->Branch("bmtfPt", &Bmtf_Pt);
   tree_->Branch("bmtfEta", &Bmtf_Eta);
-  tree_->Branch("bmftFineBit", &Bmtf_FineBit);
   tree_->Branch("bmtfPhi", &Bmtf_Phi);
+  tree_->Branch("bmftFineBit", &Bmtf_FineBit);
   tree_->Branch("bmtfqual", &Bmtf_qual);
   tree_->Branch("bmtfch", &Bmtf_ch);
   tree_->Branch("bmtfbx", &Bmtf_bx);
@@ -1235,7 +1266,8 @@ void TTreeGenerator::beginJob()
   tree_->Branch("bmtfwh", &Bmtf_wh);
   tree_->Branch("bmtftrAddress", &Bmtf_trAddress);
   tree_->Branch("bmtfSize", &Bmtf_Size);
-  
+
+  // Unpacking RPC  
   tree_->Branch("twinMuxRpcBx", &TwinMux_Rpc_bx);
   tree_->Branch("twinMuxRpcStrip", &TwinMux_Rpc_strip);
   tree_->Branch("twinMuxRpcRegion", &TwinMux_Rpc_region);
@@ -1248,6 +1280,18 @@ void TTreeGenerator::beginJob()
   tree_->Branch("twinMuxRpcDet", &TwinMux_Rpc_det);
   tree_->Branch("twinMuxRpcSubdetId", &TwinMux_Rpc_subdetId);
   tree_->Branch("twinMuxRpcRawId", &TwinMux_Rpc_rawId);
+  
+  //Unpacking RPC RecHit
+  tree_->Branch("UnpackingRpcRecHitRegion", &Unpacking_Rpc_RecHit_region);			   
+  tree_->Branch("UnpackingRpcRecHitClusterSize", &Unpacking_Rpc_RecHit_clusterSize);		   
+  tree_->Branch("UnpackingRpcRecHitStrip", &Unpacking_Rpc_RecHit_strip);			   
+  tree_->Branch("UnpackingRpcRecHitBx", &Unpacking_Rpc_RecHit_bx);			   
+  tree_->Branch("UnpackingRpcRecHitStation", &Unpacking_Rpc_RecHit_station);		   
+  tree_->Branch("UnpackingRpcRecHitSector", &Unpacking_Rpc_RecHit_sector);		   
+  tree_->Branch("UnpackingRpcRecHitLayer", &Unpacking_Rpc_RecHit_layer);			   
+  tree_->Branch("UnpackingRpcRecHitSubsector", &Unpacking_Rpc_RecHit_subsector);		   
+  tree_->Branch("UnpackingRpcRecHitRoll", &Unpacking_Rpc_RecHit_roll);			   
+  tree_->Branch("UnpackingRpcRecHitRing", &Unpacking_Rpc_RecHit_ring); 
 
   return;
 }
@@ -1458,6 +1502,18 @@ inline void TTreeGenerator::clear_Arrays()
 	TwinMux_Rpc_det.clear();
 	TwinMux_Rpc_subdetId.clear();
 	TwinMux_Rpc_rawId.clear();
+	
+	  // Unpacking RPC rec hits
+  Unpacking_Rpc_RecHit_region.clear();
+  Unpacking_Rpc_RecHit_clusterSize.clear();
+  Unpacking_Rpc_RecHit_strip.clear();
+  Unpacking_Rpc_RecHit_bx.clear();
+  Unpacking_Rpc_RecHit_station.clear();
+  Unpacking_Rpc_RecHit_sector.clear();
+  Unpacking_Rpc_RecHit_layer.clear();
+  Unpacking_Rpc_RecHit_subsector.clear();
+  Unpacking_Rpc_RecHit_roll.clear();
+  Unpacking_Rpc_RecHit_ring.clear();
   
   return;
 }

@@ -19,6 +19,7 @@
 #include "DataFormats/L1TMuon/interface/RegionalMuonCandFwd.h"
 #include "DataFormats/L1TMuon/interface/RegionalMuonCand.h"
 
+
 //using namespace l1t;
 
 //#include "UserCode/DTDPGAnalysis/interface/L1AnalysisBMTFDataFormat.h"
@@ -65,6 +66,12 @@ private:
   void analyzeBMTF(const edm::Event& e);
   void analyzeRPCunpacking(const edm::Event& e);
 
+ void analyzeUnpackingRpcRecHit(const edm::Event& e);
+
+
+
+
+
   std::vector<L1MuRegionalCand> getBXCands(const L1MuGMTReadoutRecord* igmtrr, const int DetectorType) const;
 
   TrajectoryStateOnSurface cylExtrapTrkSam(reco::TrackRef track, const float rho) const;
@@ -75,8 +82,10 @@ private:
   edm::EDGetTokenT<L1MuDTChambThContainer> bmtfThInputTag_;
   edm::EDGetTokenT<l1t::RegionalMuonCandBxCollection> bmtfOutputTag_;
 
-  
   edm::EDGetTokenT<MuonDigiCollection<RPCDetId,RPCDigi> > rpcToken_;
+  
+  edm::InputTag UnpackingRpcRecHitLabel_;
+  edm::EDGetTokenT<RPCRecHitCollection> UnpackingRpcRecHitToken_;
 
   edm::InputTag dtDigiLabel_;
   edm::EDGetTokenT<DTDigiCollection> dtDigiToken_ ;

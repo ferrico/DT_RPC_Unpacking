@@ -147,9 +147,9 @@ public :
    Short_t         Ngmtcands;
    
    int bmtfSize;
-   std::vector<int> bmtfPt;
-   std::vector<int> bmtfEta;
-   std::vector<int> bmtfPhi;
+   std::vector<float> bmtfPt;
+   std::vector<float> bmtfEta;
+   std::vector<float> bmtfPhi;
    std::vector<int> bmtfqual;
    std::vector<int> bmtfch;
    std::vector<int> bmtfbx;
@@ -170,6 +170,17 @@ public :
    std::vector<int> twinMuxRpcDet;
    std::vector<int> twinMuxRpcSubdetId;
    std::vector<int> twinMuxRpcRawId;
+   
+   std::vector<int> UnpackingRpcRecHitRegion;
+   std::vector<int> UnpackingRpcRecHitClusterSize;
+   std::vector<int> UnpackingRpcRecHitStrip;
+   std::vector<int> UnpackingRpcRecHitBx;
+   std::vector<int> UnpackingRpcRecHitStation;
+   std::vector<int> UnpackingRpcRecHitSector;
+   std::vector<int> UnpackingRpcRecHitLayer;
+   std::vector<int> UnpackingRpcRecHitSubsector;
+   std::vector<int> UnpackingRpcRecHitRoll;
+   std::vector<int> UnpackingRpcRecHitRing;
    
    // List of branches
    TBranch        *b_runnumber;   //!
@@ -321,6 +332,16 @@ public :
    TBranch        *b_twinMuxRpcDet;   //!
    TBranch        *b_twinMuxRpcSubdetId;   //!
    TBranch        *b_twinMuxRpcRawId;   //!
+   TBranch        *b_UnpackingRpcRecHitRegion; //!
+   TBranch        *b_UnpackingRpcRecHitClusterSize; //!
+   TBranch        *b_UnpackingRpcRecHitStrip; //!
+   TBranch        *b_UnpackingRpcRecHitBx; //!
+   TBranch        *b_UnpackingRpcRecHitStation; //!
+   TBranch        *b_UnpackingRpcRecHitSector; //!
+   TBranch        *b_UnpackingRpcRecHitLayer; //!
+   TBranch        *b_UnpackingRpcRecHitSubsector; //!
+   TBranch        *b_UnpackingRpcRecHitRoll; //!
+   TBranch        *b_UnpackingRpcRecHitRing; //!
 
    AnalyzeNtuple(TTree *tree=0);
    virtual ~AnalyzeNtuple();
@@ -513,6 +534,16 @@ void AnalyzeNtuple::Init(TTree *tree)
     twinMuxRpcDet = 0;
     twinMuxRpcSubdetId = 0;
     twinMuxRpcRawId = 0;
+    UnpackingRpcRecHitRegion = 0;
+    UnpackingRpcRecHitClusterSize = 0;
+    UnpackingRpcRecHitStrip = 0;
+    UnpackingRpcRecHitBx = 0;
+    UnpackingRpcRecHitStation = 0;
+    UnpackingRpcRecHitSector = 0;
+    UnpackingRpcRecHitLayer = 0;
+    UnpackingRpcRecHitSubsector = 0;
+    UnpackingRpcRecHitRoll = 0;
+    UnpackingRpcRecHitRing = 0;
    
    // Set branch addresses and branch pointers
    if (!tree) return;
@@ -669,6 +700,16 @@ void AnalyzeNtuple::Init(TTree *tree)
    fChain->SetBranchAddress("twinMuxRpcDet", &TwinMux_Rpc_det, &b_twinMuxRpcDet);
    fChain->SetBranchAddress("twinMuxRpcSubdetId", &TwinMux_Rpc_subdetId, &b_twinMuxRpcSubdetId);
    fChain->SetBranchAddress("twinMuxRpcRawId", &TwinMux_Rpc_rawId, &b_twinMuxRpcRawId);
+   fChain->SetBranchAddress("UnpackingRpcRecHitRegion", &Unpacking_Rpc_RecHit_region, &b_UnpackingRpcRecHitRegion);			   
+   fChain->SetBranchAddress("UnpackingRpcRecHitClusterSize", &Unpacking_Rpc_RecHit_clusterSize, &b_UnpackingRpcRecHitClusterSize);		   
+   fChain->SetBranchAddress("UnpackingRpcRecHitStrip", &Unpacking_Rpc_RecHit_strip, &b_UnpackingRpcRecHitStrip);			   
+   fChain->SetBranchAddress("UnpackingRpcRecHitBx", &Unpacking_Rpc_RecHit_bx, &b_UnpackingRpcRecHitBx);			   
+   fChain->SetBranchAddress("UnpackingRpcRecHitStation", &Unpacking_Rpc_RecHit_station, &b_UnpackingRpcRecHitStation);		   
+   fChain->SetBranchAddress("UnpackingRpcRecHitSector", &Unpacking_Rpc_RecHit_sector, &b_UnpackingRpcRecHitSector);		   
+   fChain->SetBranchAddress("UnpackingRpcRecHitLayer", &Unpacking_Rpc_RecHit_layer, &b_UnpackingRpcRecHitLayer);			   
+   fChain->SetBranchAddress("UnpackingRpcRecHitSubsector", &Unpacking_Rpc_RecHit_subsector, &b_UnpackingRpcRecHitSubsector);		   
+   fChain->SetBranchAddress("UnpackingRpcRecHitRoll", &Unpacking_Rpc_RecHit_roll,& b_UnpackingRpcRecHitRoll);			   
+   fChain->SetBranchAddress("UnpackingRpcRecHitRing", &Unpacking_Rpc_RecHit_ring, &b_UnpackingRpcRecHitRing); 
 
    Notify();
 }

@@ -11,7 +11,7 @@ myDTNtuple = cms.EDAnalyzer('TTreeGenerator',
                             staMuLabel     = cms.InputTag("muons"),
                             gmtLabel     = cms.InputTag("gtDigis"),  # legacy
                             gtLabel      = cms.InputTag("gtDigis"),  # legacy
-                            rpcRecHitLabel = cms.InputTag("rpcRecHits"),
+                            rpcRecHitLabel = cms.InputTag("rpcRecHits", "", "RECO"),
                             dtDigiSize = cms.int32(300),
                             dtSegmentSize = cms.int32(50),
                             cscSegmentSize = cms.int32(50),
@@ -33,6 +33,8 @@ myDTNtuple = cms.EDAnalyzer('TTreeGenerator',
 						    bmtfInputThDigis = cms.InputTag("BMTFStage2Digis"),
 						    bmtfOutputDigis = cms.InputTag("BMTFStage2Digis"),
 				    		rpcLabel 		  = cms.InputTag("rpcUnpackingModule"),
+                            UnpackingRpcRecHitLabel = cms.InputTag("rpcRecHits", "", "DTNT"), # from unpacking RPC
+#                             UnpackingRpcRecHitLabel = cms.InputTag("rpcRecHits", "", "DTNTandRPC"), # from unpacking RPC
            ######## Parameters for retrieving the ttrig to correct the recHit times
                             tTrigModeConfig = cms.untracked.PSet(
                                   vPropWire = cms.double(24.4),
