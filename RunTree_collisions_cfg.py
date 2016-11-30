@@ -106,10 +106,10 @@ process.source = cms.Source("PoolSource",
     ##'/store/express/Commissioning2016/ExpressPhysics/FEVT/Express-v1/000/270/389/00000/A0D5994E-9506-E611-A4A7-02163E0141CE.root'
     # '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/12D4E6E2-F891-E611-8EC1-02163E012A22.root'
 	#'root://xrootd-cms.infn.it///store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/06BA6E22-EE91-E611-87B6-02163E012AE5.root'
-  'file:/afs/cern.ch/work/f/ferrico/private/06BA6E22-EE91-E611-87B6-02163E012AE5.root',
-#        '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/12D4E6E2-F891-E611-8EC1-02163E012A22.root',
-#        '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/1A2F648B-E891-E611-8262-02163E011995.root',
-#        '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/3AA76B2A-F091-E611-B97F-FA163EFD691C.root',
+#  'file:/afs/cern.ch/work/f/ferrico/private/06BA6E22-EE91-E611-87B6-02163E012AE5.root',
+        '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/12D4E6E2-F891-E611-8EC1-02163E012A22.root',
+        '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/1A2F648B-E891-E611-8262-02163E011995.root',
+        '/store/data/Run2016H/SingleMuon/RAW-RECO/ZMu-PromptReco-v2/000/282/917/00000/3AA76B2A-F091-E611-B97F-FA163EFD691C.root',
   ),
   secondaryFileNames = cms.untracked.vstring(
   )
